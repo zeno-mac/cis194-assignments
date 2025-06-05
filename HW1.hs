@@ -51,7 +51,7 @@ doubleEveryOtherRev (a:b:c) = a : 2*b : doubleEveryOtherRev c
 --Uses the auxiliary function to reverse locally the function
 doubleEveryOther :: [Integer] -> [Integer]
 doubleEveryOther x = reverse (doubleAux (reverse x))
-    where 
+    where
         doubleAux [] = []
         doubleAux [x] = [x]
         doubleAux (a:b:c) = a : 2*b : doubleAux c
@@ -76,4 +76,11 @@ validate :: Integer -> Bool-}
 validate :: Integer -> Bool
 validate x = sumDigits (doubleEveryOther (toDigits x))`mod` 10 == 0
 
+
+{-Exercise 5 - Tower of Hanoi-}
+type Peg = String
+type Move = (Peg, Peg)
+hanoi :: Integer -> Peg -> Peg -> Peg -> [Move]
+hanoi 1 a b c = [(a,b)]
+hanoi x a b c = hanoi (x-1) a c b ++ [(a,b)] ++ hanoi (x-1) c b a
 
