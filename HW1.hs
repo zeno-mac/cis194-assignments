@@ -19,16 +19,15 @@ toDigitsRev x
     | x<= 0 = []
     | otherwise = x `mod` 10 : toDigitsRev (x `div` 10)
 -}
-{-
-Accumulator version and no auxiliary function
-toDigits :: Integer -> [Integer]
-toDigits n
+
+--Accumulator version and no auxiliary function
+toDigitsRev' :: Integer -> [Integer]
+toDigitsRev' n
     | n <= 0    = []
     | otherwise = reverse (go n [])
   where
     go 0 acc = acc
     go x acc = go (x `div` 10) ((x `mod` 10) : acc)
--}
 
 
 toDigits :: Integer -> [Integer]
@@ -43,10 +42,20 @@ toDigits x
 double every other one. Define a function
 doubleEveryOther :: [Integer] -> [Integer]-}
 
+--Takes in input the reversed list and return the reversed list
+doubleEveryOtherRev :: [Integer] -> [Integer]
+doubleEveryOtherRev [] = []
+doubleEveryOtherRev [a] = [a]
+doubleEveryOtherRev (a:b:c) = a : 2*b : doubleEveryOtherRev c
+
+--Uses the auxiliary function to reverse locally the function
 doubleEveryOther :: [Integer] -> [Integer]
-doubleEveryOther [] = []
-doubleEveryOther [a] = [a]
-doubleEveryOther (a:b:c) = a : 2*b : doubleEveryOther c
+doubleEveryOther x = reverse (doubleAux (reverse x))
+    where 
+        doubleAux [] = []
+        doubleAux [x] = [x]
+        doubleAux (a:b:c) = a : 2*b : doubleAux c
+
 
 {-Exercise 3 The output of doubleEveryOther has a mix of one-digit
 and two-digit numbers. Define the function
@@ -65,4 +74,6 @@ sumDigits (x:xs) = sumDigitsNumber x + sumDigits xs
 validate :: Integer -> Bool-}
 
 validate :: Integer -> Bool
-validate x = sumDigits (doubleEveryOther (toDigitsRev x))`mod` 10 == 0
+validate x = sumDigits (doubleEveryOther (toDigits x))`mod` 10 == 0
+
+
