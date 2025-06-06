@@ -1,3 +1,9 @@
+
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use foldr" #-}
+module Week1.CreditCard where
+--import Distribution.Simple.Utils (xargs)
+
 {- Exercise 1 We need to first find the digits of a number. Define the
 functions
 toDigits :: Integer -> [Integer]
@@ -5,9 +11,7 @@ toDigitsRev :: Integer -> [Integer]
 toDigits should convert positive Integers to a list of digits. (For 0 or
 negative inputs, toDigits should return the empty list.) toDigitsRev
 should do the same, but with the digits reversed -}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-import Distribution.Simple.Utils (xargs)
-{-# HLINT ignore "Use foldr" #-}
+
 
 
 toDigitsRev :: Integer -> [Integer]
