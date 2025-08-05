@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{- HLINT ignore "Use map" -}
 module Week4.HW4 where
 import Data.List ((\\))
 {-
