@@ -97,7 +97,7 @@ in such a way that myFoldl behaves identically to the standard
 foldl function.-}
 
 myFoldl :: (a -> b -> a) -> a -> [b] -> a
-myFoldl f  = foldr (flip f)
+myFoldl f x  = foldr (flip f) x . reverse
 
 {-Exercise 4: Finding primes
 Read about the Sieve of Sundaram. Implement the algorithm us- http://en.wikipedia.org/wiki/Sieve_
