@@ -19,7 +19,7 @@ tag (Append m _ _) = m
 indexJ :: (Sized b, Monoid b) => Int -> JoinList b a -> Maybe a
 indexJ 0 (Single _ a) = Just a
 indexJ i (Append m l r)
-    | i < 0 || i > sizeM = Nothing
+    | i < 0 || i >= sizeM = Nothing
     | i < sizeL = indexJ i l
     | otherwise = indexJ (i - sizeL) r
     where
@@ -39,7 +39,7 @@ dropJ i t@(Single _ _)
     | i <= 0 = t
     | otherwise = Empty
 dropJ i t@(Append m l r)
-    | i > sizeM = Empty
+    | i >= sizeM = Empty
     | i < 0 = t
     | i <sizeL = dropJ i l +++ r
     | otherwise = dropJ (i - sizeL) r
@@ -71,14 +71,17 @@ instance Buffer (JoinList (Score, Size) String) where
     value = getScore. fst . tag
     toString = unlines . jlToList
 
-    --- This implementation works but inefficiently
-    --- It basically a linked list, could be improved by making a balanced tree
-    fromString s= foldr ((+++) . (\x -> Single (scoreString x, 1) x)) Empty (lines s)
+    fromString s = buildBalanced (map (\x -> Single (scoreString x, 1) x) (lines s))
+      where
+        buildBalanced [] = Empty
+        buildBalanced [x] = x
+        buildBalanced xs = let (l, r) = splitAt (length xs `div` 2) xs
+                           in buildBalanced l +++ buildBalanced r
 
     replaceLine :: Int -> String -> JoinList (Score, Size) String -> JoinList (Score, Size) String
     replaceLine i s t@(Append m l r)
-     | i < 0 || i > sizeM = t
-     | i < sizeL =replaceLine i s l +++ r
+     | i < 0 || i >= sizeM = t
+     | i < sizeL = replaceLine i s l +++ r
      | otherwise = l +++ replaceLine (i-sizeL) s r
      where
         sizeM = getSize $ size m
