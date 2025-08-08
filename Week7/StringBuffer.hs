@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+
 module StringBuffer where
 
 import Data.Monoid
