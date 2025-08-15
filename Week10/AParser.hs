@@ -1,8 +1,11 @@
 {- CIS 194 HW 10
    due Monday, 1 April
 -}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use void" #-}
+{-# HLINT ignore "Use <$" #-}
 
-module AParser where
+module Week10.AParser where
 
 import           Control.Applicative
 
@@ -13,7 +16,7 @@ import           Data.Char
 -- succeeds, it returns the parsed value along with the remainder of
 -- the input.
 newtype Parser a = Parser { runParser :: String -> Maybe (a, String) }
-
+-- Parser (a->b) = runParser :: String -> Maybe (a->b,String)
 -- For example, 'satisfy' takes a predicate on Char, and constructs a
 -- parser which succeeds only if it sees a Char that satisfies the
 -- predicate (which it then returns).  If it encounters a Char that
@@ -57,3 +60,43 @@ posInt = Parser f
 ------------------------------------------------------------
 -- Your code goes below here
 ------------------------------------------------------------
+
+--- Exercise 1
+first :: (a->b) -> (a,c)-> (b,c)
+first f (a,b) = (f a, b)
+
+
+instance Functor Parser where
+  fmap :: (a -> b) -> Parser a -> Parser b
+  fmap f (Parser g) = Parser (fmap (first f) . g)
+
+--- Exercise 2
+instance Applicative Parser  where
+ pure :: a -> Parser a
+ pure x = Parser $ const $ Just (x,"")
+ (<*>) :: Parser (a -> b) -> Parser a -> Parser b
+ (Parser p1) <*> (Parser p2) =  Parser ( go p1 p2)
+  where
+   go :: (String->Maybe (a->b,String)) -> (String -> Maybe (a,String))->String -> Maybe (b,String)
+   go f1 f2 string1 = case f1 string1 of
+     Nothing -> Nothing
+     Just (f , string2) -> case f2 string2 of   --- second case of could be replaced by <$> 
+       Nothing -> Nothing
+       Just (a, string3) -> Just (f a, string3)
+
+--- Exercise 3
+abParser :: Parser (Char, Char)
+abParser = (,) <$> char 'a' <*> char 'b'
+abParser_ :: Parser ()
+abParser_ = const () <$> abParser
+
+intPair:: Parser [Integer]
+intPair = (\x _ y -> [x, y]) <$> posInt <*> char ' ' <*> posInt
+
+--- Exercise 4
+instance Alternative Parser where
+  empty = Parser (const Nothing)
+  (<|>) p1 p2 = Parser (\s ->  runParser p1 s <|> runParser p2 s)
+
+intOrUppercase :: Parser ()
+intOrUppercase = (const () <$> posInt) <|> (const () <$> satisfy isUpper)
